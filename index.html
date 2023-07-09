@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencarian Sekolah</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.7/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold mb-4">Pencarian Sekolah</h1>
+        <div class="flex items-center mb-4">
+            <input id="searchInput" type="text" class="flex-grow border-2 border-gray-300 rounded-md py-2 px-4 mr-2 focus:outline-none focus:border-blue-500" placeholder="Cari sekolah...">
+            <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Cari</button>
+        </div>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsDiv = document.getElementById('results');
+
+        function displaySchools(schools) {
+            resultsDiv.innerHTML = '';
+
+            if (schools.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-lg">Tidak ditemukan sekolah dengan nama tersebut.</p>';
+                return;
+            }
+
+            const ul = document.createElement('ul');
+            ul.classList.add('list-disc', 'list-inside', 'mb-4');
+
+            schools.forEach(school => {
+                const li = document.createElement('li');
+                li.innerText = school.nama_sekolah;
+                ul.appendChild(li);
+            });
+
+            resultsDiv.appendChild(ul);
+        }
+
+        async function searchSchools(query) {
+            try {
+                const response = await axios.get(`https://api-sekolah-indonesia.vercel.app/sekolah?nama=${query}`);
+                const schools = response.data.sekolah;
+                displaySchools(schools);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        searchButton.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query !== '') {
+                searchSchools(query);
+            }
+        });
+    </script>
+</body>
+</html>
